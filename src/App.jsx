@@ -1,34 +1,34 @@
-import { useState } from "react";
-import "./styles/App.css";
-import PostList from "./components/PostList";
-import MyButton from "./components/UI/button/MyButton";
-import MyInput from "./components/UI/input/MyInput";
-import PostForm from "./components/PostForm";
+import {BrowserRouter} from 'react-router-dom';
+import './styles/App.css';
+import Navbar from './components/UI/Navbar/Navbar';
+import AppRouter from './components/AppRouter';
+import {AuthContext} from './context';
+import {useEffect, useState} from 'react';
 
 const App = () => {
-  const [posts, setPosts] = useState([
-    { id: 1, title: "JavaScript", body: "Description" },
-    { id: 2, title: "JavaScript 2", body: "Description" },
-    { id: 3, title: "JavaScript 3", body: "Description" },
-  ]);
+  const [isAuth, setIsAuth] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const createPost = (newPost) => {
-    setPosts([...posts, newPost]);
-  };
-
-  const removePost = (post) => {
-    setPosts(posts.filter((p) => p.id !== post.id));
-  };
+  useEffect(() => {
+    if (localStorage.getItem('auth')) {
+      setIsAuth(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   return (
-    <div className='App'>
-      <PostForm create={createPost} />
-      {posts.length !== 0 ? (
-        <PostList remove={removePost} posts={posts} title='Список постов 1' />
-      ) : (
-        <h1 style={{ textAlign: "center" }}>Посты не были найдены</h1>
-      )}
-    </div>
+    <AuthContext.Provider
+      value={{
+        isAuth,
+        setIsAuth,
+        isLoading
+      }}
+    >
+      <BrowserRouter>
+        <Navbar />
+        <AppRouter />
+      </BrowserRouter>
+    </AuthContext.Provider>
   );
 };
 
